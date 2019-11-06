@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"math"
 	"os"
 
 	"github.com/EliCDavis/mesh"
@@ -9,7 +10,6 @@ import (
 )
 
 func save(mesh mesh.Model, name string) error {
-
 	f, err := os.Create(name)
 	if err != nil {
 		return err
@@ -25,12 +25,15 @@ func save(mesh mesh.Model, name string) error {
 }
 
 func main() {
-	mesh, err := DrawPlaneShape(
-		vector.Vector3Zero(),
-		vector.Vector3Up(),
-		30.0,
-		80,
-	)
+
+	points := make([]vector.Vector3, 0)
+	for i := 0.0; i < 100.0; i += 1.0 {
+		points = append(points, vector.NewVector3(math.Sin(i/10.0)*10.0, i, 0))
+	}
+
+	var ls LineSegment3D = points
+
+	mesh, err := ls.CreatePipe(1)
 
 	if err != nil {
 		panic(err)
