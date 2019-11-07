@@ -67,12 +67,12 @@ func GetPlaneOuterPoints(center, normal vector.Vector3, radius float64, sides in
 	return outerPoints
 }
 
+// MakeSquare draws a square using two triangles
 func MakeSquare(
 	bottomLeft vector.Vector3,
 	topLeft vector.Vector3,
 	topRight vector.Vector3,
 	bottomRight vector.Vector3,
-
 ) []mesh.Polygon {
 	polys := make([]mesh.Polygon, 2)
 
@@ -90,4 +90,29 @@ func MakeSquare(
 
 	polys[1] = poly
 	return polys
+}
+
+func GetClosestSpoutOpeningSize(size float64) float64 {
+	return size
+}
+
+func GradientThickness(
+	startingPoint, endingPoint vector.Vector3,
+	startingWidth, endingWidth float64,
+	steps int,
+	f func(percentDone, start, end float64) float64,
+) PipeSegment {
+	points := make([]vector.Vector3, steps-2)
+
+	thicknesses := make([]float64, steps-2)
+
+	dir := endingPoint.Sub(startingPoint)
+
+	for i := 1; i < steps-1; i++ {
+		percentDone := float64(i) / float64(steps)
+		thicknesses[i-1] = f(percentDone, startingWidth, endingWidth)
+		points[i-1] = startingPoint.Add(dir.MultByConstant(percentDone))
+	}
+
+	return PipeSegment{positions: points, thicknessess: thicknesses}
 }

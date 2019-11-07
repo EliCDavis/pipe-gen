@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"math"
 	"os"
 
 	"github.com/EliCDavis/mesh"
@@ -26,20 +25,32 @@ func save(mesh mesh.Model, name string) error {
 
 func main() {
 
-	points := make([]vector.Vector3, 0)
-	for i := 0.0; i < 100.0; i += 1.0 {
-		points = append(points, vector.NewVector3(math.Sin(i/10.0)*10.0, i, 0))
+	hopper := Hopper{
+		binHeight:   2.0,
+		taperHeight: 1.0,
+		radius:      1.,
+		position:    vector.Vector3Zero(),
+		rotation:    mesh.QuaternionZero(),
 	}
 
-	var ls LineSegment3D = points
+	mesh := hopper.ToModel()
 
-	mesh, err := ls.CreatePipe(1)
+	// points := make([]vector.Vector3, 0)
+	// thickness := make([]float64, 0)
+	// for i := 0.0; i < 1000.0; i += 1.0 {
+	// 	points = append(points, vector.NewVector3(math.Sin(i/100.0)*10.0, i/10, 0))
+	// 	thickness = append(thickness, math.Abs(math.Sin(i/100.0))+.1)
+	// }
 
-	if err != nil {
-		panic(err)
-	}
+	// var ls LineSegment3D = points
 
-	err = save(mesh, "out.obj")
+	// mesh, err := ls.CreatePipeWithVarryingThickness(thickness)
+
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	err := save(mesh, "out.obj")
 
 	if err != nil {
 		panic(err)
