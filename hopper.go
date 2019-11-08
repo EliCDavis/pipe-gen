@@ -10,18 +10,29 @@ import (
 // Hopper those weird hopper things that have a hose coming in the top and a
 // hose coming out the bottom
 type Hopper struct {
-	binHeight   float64
-	taperHeight float64
-	radius      float64
-	position    vector.Vector3
-	rotation    mesh.Quaternion
+	binHeight       float64
+	taperHeight     float64
+	radius          float64
+	position        vector.Vector3
+	rotation        mesh.Quaternion
+	heightOffGround float64
+}
+
+func (h Hopper) GetSpouts() []Spout {
+	return []Spout{
+		Spout{
+			opening:      GetClosestSpoutOpeningSize(.1),
+			entrance:     h.position.Add(vector.NewVector3(0, h.heightOffGround+.01, 0)),
+			outDirection: vector.NewVector3(0, -1, 0),
+		},
+	}
 }
 
 func (h Hopper) ToModel() mesh.Model {
 
-	heightOffset := .1
+	heightOffset := h.heightOffGround
 
-	opening := GetClosestSpoutOpeningSize(.05)
+	opening := GetClosestSpoutOpeningSize(.1)
 	lipSize := opening + .1
 
 	linkageHeight := .1
@@ -64,7 +75,7 @@ func (h Hopper) ToModel() mesh.Model {
 		topPortion.thicknessess[0],
 		10,
 		func(percentDone, start, end float64) float64 {
-			t :=math.Pow(percentDone-1.0, 3.0) + 1.0
+			t := math.Pow(percentDone-1.0, 3.0) + 1.0
 			return start + ((end - start) * t)
 		},
 	)
@@ -73,16 +84,51 @@ func (h Hopper) ToModel() mesh.Model {
 		topPortion.positions[len(topPortion.positions)-1],
 		topPortion.positions[len(topPortion.positions)-1].Add(vector.NewVector3(0, .5, 0)),
 		topPortion.thicknessess[len(topPortion.thicknessess)-1],
-		0,
-		10,
+		opening,
+		30,
 		func(percentDone, start, end float64) float64 {
-			t :=math.Pow(percentDone, 3.0)
+			t := math.Pow(percentDone, 3.0)
 			return start + ((end - start) * t)
 		},
 	)
 
-	allSegments := bottom.Add(bottomTopLinkage).Add(topPortion).Add(topCap)
+	topSpout := PipeSegment{
+		positions: []vector.Vector3{
+			topPortion.positions[len(topPortion.positions)-1].Add(vector.NewVector3(0, .5, 0)),
+			topPortion.positions[len(topPortion.positions)-1].Add(vector.NewVector3(0, .51, 0)),
+			topPortion.positions[len(topPortion.positions)-1].Add(vector.NewVector3(0, .6, 0)),
+			topPortion.positions[len(topPortion.positions)-1].Add(vector.NewVector3(0, .601, 0)),
+		},
+		thicknessess: []float64{
+			opening,
+			lipSize,
+			lipSize,
+			0,
+		},
+	}
 
+	allSegments := bottom.
+		Add(bottomTopLinkage).
+		Add(topPortion).
+		Add(topCap).
+		Add(topSpout)
+
+	var leg LineSegment3D = []vector.Vector3{
+		vector.Vector3Zero(),
+		vector.Vector3Up().MultByConstant(heightOffset + h.taperHeight + .1),
+	}
+	legModel, err := leg.CreatePipe(.05)
+
+	if err != nil {
+		panic(err)
+	}
+
+	hypotenuse := math.Sin(math.Pi/4.0)*h.radius - .05
 	mesh, _ := LineSegment3D(allSegments.positions).CreatePipeWithVarryingThickness(allSegments.thicknessess)
-	return mesh
+
+	return mesh.
+		Merge(legModel.Translate(vector.NewVector3(hypotenuse, 0, hypotenuse).Add(h.position))).
+		Merge(legModel.Translate(vector.NewVector3(hypotenuse, 0, -hypotenuse).Add(h.position))).
+		Merge(legModel.Translate(vector.NewVector3(-hypotenuse, 0, -hypotenuse).Add(h.position))).
+		Merge(legModel.Translate(vector.NewVector3(-hypotenuse, 0, hypotenuse).Add(h.position)))
 }

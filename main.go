@@ -25,32 +25,63 @@ func save(mesh mesh.Model, name string) error {
 
 func main() {
 
+	radius := 1.0
+
+	model := mesh.Model{}
+
+	// for x := 1.0; x < 5.0; x += 1.0 {
+	// 	hopper := Hopper{
+	// 		binHeight:       2.0,
+	// 		taperHeight:     1.0,
+	// 		radius:          radius,
+	// 		heightOffGround: 1.0,
+	// 		position:        vector.NewVector3(((radius*2.0)+1.0)*x, 0, 0),
+	// 		rotation:        mesh.QuaternionZero(),
+	// 	}
+	// 	model = model.Merge(hopper.ToModel())
+	// }
+
 	hopper := Hopper{
-		binHeight:   2.0,
-		taperHeight: 1.0,
-		radius:      1.,
-		position:    vector.Vector3Zero(),
-		rotation:    mesh.QuaternionZero(),
+		binHeight:       2.0,
+		taperHeight:     1.0,
+		radius:          radius,
+		heightOffGround: 1.0,
+		position:        vector.NewVector3(((radius * 2.0) + 1.0), 0, 0),
+		rotation:        mesh.QuaternionZero(),
 	}
+	model = model.Merge(hopper.ToModel())
 
-	mesh := hopper.ToModel()
+	hopper = Hopper{
+		binHeight:       2.0,
+		taperHeight:     2.0,
+		radius:          radius,
+		heightOffGround: 1.0,
+		position:        vector.NewVector3(((radius*2.0)+1.0)*2.0, 0, 0),
+		rotation:        mesh.QuaternionZero(),
+	}
+	model = model.Merge(hopper.ToModel())
 
-	// points := make([]vector.Vector3, 0)
-	// thickness := make([]float64, 0)
-	// for i := 0.0; i < 1000.0; i += 1.0 {
-	// 	points = append(points, vector.NewVector3(math.Sin(i/100.0)*10.0, i/10, 0))
-	// 	thickness = append(thickness, math.Abs(math.Sin(i/100.0))+.1)
-	// }
+	hopper = Hopper{
+		binHeight:       3.0,
+		taperHeight:     1.0,
+		radius:          radius,
+		heightOffGround: 1.0,
+		position:        vector.NewVector3(((radius*2.0)+1.0)*3.0, 0, 0),
+		rotation:        mesh.QuaternionZero(),
+	}
+	model = model.Merge(hopper.ToModel())
 
-	// var ls LineSegment3D = points
+	hopper = Hopper{
+		binHeight:       2.0,
+		taperHeight:     1.0,
+		radius:          radius,
+		heightOffGround: 3.0,
+		position:        vector.NewVector3(((radius*2.0)+1.0)*4.0, 0, 0),
+		rotation:        mesh.QuaternionZero(),
+	}
+	model = model.Merge(hopper.ToModel())
 
-	// mesh, err := ls.CreatePipeWithVarryingThickness(thickness)
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	err := save(mesh, "out.obj")
+	err := save(model, "out.obj")
 
 	if err != nil {
 		panic(err)
