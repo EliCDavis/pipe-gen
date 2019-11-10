@@ -29,59 +29,35 @@ func main() {
 
 	model := mesh.Model{}
 
-	// for x := 1.0; x < 5.0; x += 1.0 {
-	// 	hopper := Hopper{
-	// 		binHeight:       2.0,
-	// 		taperHeight:     1.0,
-	// 		radius:          radius,
-	// 		heightOffGround: 1.0,
-	// 		position:        vector.NewVector3(((radius*2.0)+1.0)*x, 0, 0),
-	// 		rotation:        mesh.QuaternionZero(),
-	// 	}
-	// 	model = model.Merge(hopper.ToModel())
-	// }
-
-	hopper := Hopper{
-		binHeight:       2.0,
-		taperHeight:     1.0,
-		radius:          radius,
-		heightOffGround: 1.0,
-		position:        vector.NewVector3(((radius * 2.0) + 1.0), 0, 0),
-		rotation:        mesh.QuaternionZero(),
+	for x := 1.0; x < 5.0; x += 1.0 {
+		hopper := Hopper{
+			binHeight:       2.0,
+			taperHeight:     1.0,
+			radius:          radius,
+			heightOffGround: 1.0,
+			position:        vector.NewVector3(((radius*2.0)+1.0)*x, 0, 0),
+			rotation:        mesh.QuaternionZero(),
+		}
+		model = model.Merge(hopper.ToModel())
 	}
-	model = model.Merge(hopper.ToModel())
 
-	hopper = Hopper{
-		binHeight:       2.0,
-		taperHeight:     2.0,
-		radius:          radius,
-		heightOffGround: 1.0,
-		position:        vector.NewVector3(((radius*2.0)+1.0)*2.0, 0, 0),
-		rotation:        mesh.QuaternionZero(),
+	var bridgeDirection LineSegment3D = []vector.Vector3{
+		vector.NewVector3(1, 0, -2),
+		vector.NewVector3(1, 0, 2),
+
+		vector.NewVector3(5, 1, 2),
+		vector.NewVector3(11, 1, 2),
+
+		vector.NewVector3(14, 0, 2),
+		vector.NewVector3(14, 0, -2),
 	}
-	model = model.Merge(hopper.ToModel())
 
-	hopper = Hopper{
-		binHeight:       3.0,
-		taperHeight:     1.0,
-		radius:          radius,
-		heightOffGround: 1.0,
-		position:        vector.NewVector3(((radius*2.0)+1.0)*3.0, 0, 0),
-		rotation:        mesh.QuaternionZero(),
+	bridge, err := bridgeDirection.CreateLoopingPlatform(1.0)
+	if err != nil {
+		panic(err)
 	}
-	model = model.Merge(hopper.ToModel())
 
-	hopper = Hopper{
-		binHeight:       2.0,
-		taperHeight:     1.0,
-		radius:          radius,
-		heightOffGround: 3.0,
-		position:        vector.NewVector3(((radius*2.0)+1.0)*4.0, 0, 0),
-		rotation:        mesh.QuaternionZero(),
-	}
-	model = model.Merge(hopper.ToModel())
-
-	err := save(model, "out.obj")
+	err = save(model.Merge(bridge), "out.obj")
 
 	if err != nil {
 		panic(err)
