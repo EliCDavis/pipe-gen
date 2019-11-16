@@ -2,13 +2,17 @@ package main
 
 import (
 	"bufio"
+	"log"
 	"os"
+	"time"
 
 	"github.com/EliCDavis/mesh"
+	"github.com/EliCDavis/meshedpotatoes/path"
 	"github.com/EliCDavis/vector"
 )
 
 func save(mesh mesh.Model, name string) error {
+	defer timeTrack(time.Now(), "Saving Model")
 	f, err := os.Create(name)
 	if err != nil {
 		return err
@@ -21,6 +25,11 @@ func save(mesh mesh.Model, name string) error {
 		return err
 	}
 	return w.Flush()
+}
+
+func timeTrack(start time.Time, name string) {
+	elapsed := time.Since(start)
+	log.Printf("%s took %s", name, elapsed)
 }
 
 func main() {
@@ -41,18 +50,18 @@ func main() {
 		model = model.Merge(hopper.ToModel())
 	}
 
-	var bridgeDirection LineSegment3D = []vector.Vector3{
+	var bridgeDirection path.Path = []vector.Vector3{
 		vector.NewVector3(1, 0, -2),
 		vector.NewVector3(1, 0, 2),
 
 		vector.NewVector3(5, 1, 2),
-		vector.NewVector3(11, 1, 2),
+		vector.NewVector3(10, 1, 2),
 
 		vector.NewVector3(14, 0, 2),
 		vector.NewVector3(14, 0, -2),
 	}
 
-	bridge, err := bridgeDirection.CreateLoopingPlatform(1.0)
+	bridge, err := CreateLoopingPlatform(bridgeDirection, 1.0)
 	if err != nil {
 		panic(err)
 	}

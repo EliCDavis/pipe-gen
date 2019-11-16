@@ -4,6 +4,7 @@ import (
 	"math"
 
 	"github.com/EliCDavis/mesh"
+	"github.com/EliCDavis/meshedpotatoes/path"
 	"github.com/EliCDavis/vector"
 )
 
@@ -113,7 +114,7 @@ func (h Hopper) ToModel() mesh.Model {
 		Add(topCap).
 		Add(topSpout)
 
-	var leg LineSegment3D = []vector.Vector3{
+	var leg path.Path = []vector.Vector3{
 		vector.Vector3Zero(),
 		vector.Vector3Up().MultByConstant(heightOffset + h.taperHeight + .1),
 	}
@@ -124,7 +125,11 @@ func (h Hopper) ToModel() mesh.Model {
 	}
 
 	hypotenuse := math.Sin(math.Pi/4.0)*h.radius - .05
-	mesh, _ := LineSegment3D(allSegments.positions).CreatePipeWithVarryingThickness(allSegments.thicknessess)
+	mesh, err := path.Path(allSegments.positions).CreatePipeWithVarryingThickness(allSegments.thicknessess)
+
+	if err != nil {
+		panic(err)
+	}
 
 	return mesh.
 		Merge(legModel.Translate(vector.NewVector3(hypotenuse, 0, hypotenuse).Add(h.position))).
