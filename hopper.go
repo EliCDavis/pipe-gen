@@ -118,14 +118,14 @@ func (h Hopper) ToModel() mesh.Model {
 		vector.Vector3Zero(),
 		vector.Vector3Up().MultByConstant(heightOffset + h.taperHeight + .1),
 	}
-	legModel, err := leg.CreatePipe(.05)
+	legModel, err := leg.CreatePipe(.05, 32)
 
 	if err != nil {
 		panic(err)
 	}
 
 	hypotenuse := math.Sin(math.Pi/4.0)*h.radius - .05
-	mesh, err := path.Path(allSegments.positions).CreatePipeWithVarryingThickness(allSegments.thicknessess)
+	mesh, err := path.Path(allSegments.positions).CreatePipeWithVarryingThickness(allSegments.thicknessess, 32)
 
 	if err != nil {
 		panic(err)

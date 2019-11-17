@@ -62,14 +62,14 @@ func CreateLoopingPlatform(pathOfPlatform path.Path, width float64) (mesh.Model,
 		leftRailing, _ := path.Path([]vector.Vector3{
 			cleanLeftSide[i].GetStartPoint().Add(vector.Vector3Up()),
 			cleanLeftSide[i].GetEndPoint().Add(vector.Vector3Up()),
-		}).CreatePipe(.05)
+		}).CreatePipe(.05, 32)
 
 		//.CreatePipe(.05)
 
 		rightRailing, _ := path.Path([]vector.Vector3{
 			cleanRightSide[i].GetStartPoint().Add(vector.Vector3Up()),
 			cleanRightSide[i].GetEndPoint().Add(vector.Vector3Up()),
-		}).CreatePipe(.05)
+		}).CreatePipe(.05, 32)
 
 		railing = railing.
 			Merge(leftRailing).
@@ -112,7 +112,7 @@ func railingPost(position vector.Vector3) mesh.Model {
 	pipe, err := path.Path([]vector.Vector3{
 		position,
 		position.Add(vector.Vector3Up()),
-	}).CreatePipe(.05)
+	}).CreatePipe(.05, 32)
 	if err != nil {
 		panic(err)
 	}
